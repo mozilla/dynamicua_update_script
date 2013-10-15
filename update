@@ -1,0 +1,32 @@
+#/bin/bash
+
+CODE_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net/dynamicua"
+FILE_URL="https://hg.mozilla.org/mozilla-central/raw-file/tip/b2g/app/ua-update.json.in"
+FILENAME="ua-update.json"
+
+function checkretval(){
+    retval=$?
+    if [[ $retval -gt 0 ]]; then
+        echo "Error!!! Exit status of the last command was $retval"
+        exit $retval
+    fi
+}
+
+{
+
+# get file from Mercurial
+curl -s $FILE_URL -o $CODE_DIR/$FILENAME
+checkretval
+
+# remove JS comments from file
+sed -i 's/\/\/.*$//g' $CODE_DIR/$FILENAME
+checkretval
+
+# verify we have valid json before pushing
+cat $CODE_DIR/$FILENAME | json_verify 
+checkretval
+
+#deploy the code
+/data/genericrhel6/deploy dynamicua.cdn.mozilla.net
+
+}
