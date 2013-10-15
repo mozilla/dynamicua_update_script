@@ -51,6 +51,6 @@ cat $VERSION_DIR/$FILENAME | json_verify > /dev/null
 checkretval
 
 #deploy the code
-#/data/genericrhel6/deploy dynamicua.cdn.mozilla.net
+/data/genericrhel6/deploy dynamicua.cdn.mozilla.net
 
 }
