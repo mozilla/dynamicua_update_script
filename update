@@ -2,6 +2,8 @@
 
 CODE_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net/dynamicua"
 FILE_URL="https://hg.mozilla.org/mozilla-central/raw-file/tip/b2g/app/ua-update.json.in"
+FILE_REVISION_NAME="file_revision.txt"
+FILE_LATEST_REVISION=$(curl -s https://hg.mozilla.org/mozilla-central/file/febfe3c7732b/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
 B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 FILENAME=$B2G_APP_ID
 VERSION=$(cat version.txt)
@@ -17,10 +19,23 @@ function checkretval(){
 
 {
 
+
 if [ ! -d $VERSION_DIR ]
 then
     mkdir $VERSION_DIR
     checkretval
+fi
+
+if [ ! -d $CODE_DIR/$FILE_REVISION_NAME ]
+then
+    curl -s https://hg.mozilla.org/mozilla-central/file/febfe3c7732b/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$' > $CODE_DIR/$FILE_REVISION_NAME
+fi
+
+FILE_DEPLOYED_REVISION=$(cat $CODE_DIR/$FILE_REVISION_NAME)
+
+if [ $FILE_DEPLOYED_REVISION == $FILE_LATEST_REVISION ]
+then
+    exit 0
 fi
 
 # get file from Mercurial
