@@ -2,7 +2,10 @@
 
 CODE_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net/dynamicua"
 FILE_URL="https://hg.mozilla.org/mozilla-central/raw-file/tip/b2g/app/ua-update.json.in"
-FILENAME="ua-update.json"
+B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
+FILENAME=$B2G_APP_ID
+VERSION=$(cat version.txt)
+VERSION_DIR=$CODE_DIR/$VERSION
 
 function checkretval(){
     retval=$?
@@ -14,19 +17,25 @@ function checkretval(){
 
 {
 
+if [ ! -d $VERSION_DIR ]
+then
+    mkdir $VERSION_DIR
+    checkretval
+fi
+
 # get file from Mercurial
-curl -s $FILE_URL -o $CODE_DIR/$FILENAME
+curl -s $FILE_URL -o $VERSION_DIR/$FILENAME
 checkretval
 
 # remove JS comments from file
-sed -i 's/\/\/.*$//g' $CODE_DIR/$FILENAME
+sed -i 's/\/\/.*$//g' $VERSION_DIR/$FILENAME
 checkretval
 
 # verify we have valid json before pushing
-cat $CODE_DIR/$FILENAME | json_verify 
+cat $VERSION_DIR/$FILENAME | json_verify > /dev/null
 checkretval
 
 #deploy the code
-/data/genericrhel6/deploy dynamicua.cdn.mozilla.net
+#/data/genericrhel6/deploy dynamicua.cdn.mozilla.net
 
 }
