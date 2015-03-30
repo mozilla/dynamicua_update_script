@@ -26,7 +26,7 @@ then
     checkretval
 fi
 
-if [ ! -d $CODE_DIR/$FILE_REVISION_NAME ]
+if [ ! -f $CODE_DIR/$FILE_REVISION_NAME ]
 then
     curl -s https://hg.mozilla.org/mozilla-central/file/tip/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$' > $CODE_DIR/$FILE_REVISION_NAME
 fi
