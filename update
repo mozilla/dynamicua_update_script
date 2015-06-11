@@ -35,15 +35,19 @@ function checkretval(){
 
 function update_b2g () {
 
-B2G_SOURCE_URL="${FILE_URL_PREFIX}/b2g/app/${FILE_URL_FILENAME}"
+B2G_APP_NAME="b2g"
+[[ -n "$B2G_APP_NAME" ]] || abort "B2G_APP_NAME is not set"
+B2G_SOURCE_PATH="b2g/app"
+[[ -n "$B2G_SOURCE_PATH" ]] || abort "B2G_SOURCE_PATH is not set"
+B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
+[[ -n "$B2G_APP_ID" ]] || abort "B2G_APP_ID is not set"
 
-B2G_REVISION_FILE="${CODE_DIR}/b2g_revision.txt"
+B2G_SOURCE_URL="${FILE_URL_PREFIX}/${B2G_SOURCE_PATH}/${FILE_URL_FILENAME}"
+
+B2G_REVISION_FILE="${CODE_DIR}/${B2G_APP_NAME}_revision.txt"
 
 B2G_LATEST_REVISION=$( get_latest_revision "${B2G_SOURCE_URL/raw-file/file}" )
 [[ -n "$B2G_LATEST_REVISION" ]] || abort "unable to fetch B2G_LATEST_REVISION from '${B2G_SOURCE_URL/raw-file/file}'"
-
-B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
-[[ -n "$B2G_APP_ID" ]] || abort "B2G_APP_ID is not set"
 
 B2G_OUTPUT_FILE="${VERSION_DIR}/${B2G_APP_ID}"
 
