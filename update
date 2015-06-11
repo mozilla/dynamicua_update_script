@@ -7,12 +7,12 @@ CODE_DIR="${SRC_DIR}/dynamicua"
 FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
 FILE_URL_FILENAME="ua-update.json.in"
 B2G_FILE_URL_PATH="${FILE_URL_PREFIX}/b2g/app"
-FILE_URL="${B2G_FILE_URL_PATH}/${FILE_URL_FILENAME}"
+B2G_SOURCE_URL="${B2G_FILE_URL_PATH}/${FILE_URL_FILENAME}"
 
 FILE_REVISION_NAME="file_revision.txt"
 CURRENT_REVISION_FILE="${CODE_DIR}/${FILE_REVISION_NAME}"
 
-FILE_LATEST_REVISION=$(curl -s "${FILE_URL/raw-file/file}" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
+FILE_LATEST_REVISION=$(curl -s "${B2G_SOURCE_URL/raw-file/file}" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
 
 B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 
@@ -54,7 +54,7 @@ then
 fi
 
 # get file from Mercurial
-curl -s $FILE_URL -o $B2G_OUTPUT_FILE
+curl -s $B2G_SOURCE_URL -o $B2G_OUTPUT_FILE
 checkretval
 
 # remove JS comments from file
