@@ -45,12 +45,6 @@ then
     checkretval
 fi
 
-if [[ ! -f $CURRENT_REVISION_FILE ]]
-then
-    # If we don't have a current revision, write out a placeholder to force an update later on.
-    echo '__NONE__' > $CURRENT_REVISION_FILE
-fi
-
 FILE_DEPLOYED_REVISION="$(cat $CURRENT_REVISION_FILE)"
 
 if [[ "$FILE_DEPLOYED_REVISION" == "$FILE_LATEST_REVISION" ]]
