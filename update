@@ -1,6 +1,8 @@
 #/bin/bash
 
-CODE_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net/dynamicua"
+SRC_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net"
+
+CODE_DIR="${SRC_DIR}/dynamicua"
 
 FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
 FILE_URL_FILENAME="ua-update.json.in"
@@ -15,7 +17,7 @@ B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 
 FILENAME=$B2G_APP_ID
 
-VERSION=$(cat /data/genericrhel6/src/dynamicua.cdn.mozilla.net/version.txt)
+VERSION=$(cat "${SRC_DIR}/version.txt")
 VERSION_DIR=$CODE_DIR/$VERSION
 
 function checkretval(){
