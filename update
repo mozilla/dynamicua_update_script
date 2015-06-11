@@ -35,12 +35,12 @@ function checkretval(){
 
 function update_b2g () {
 
-B2G_APP_NAME="b2g"
-[[ -n "$B2G_APP_NAME" ]] || abort "B2G_APP_NAME is not set"
-B2G_SOURCE_PATH="b2g/app"
-[[ -n "$B2G_SOURCE_PATH" ]] || abort "B2G_SOURCE_PATH is not set"
-B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
-[[ -n "$B2G_APP_ID" ]] || abort "B2G_APP_ID is not set"
+B2G_APP_NAME="$1"
+[[ -n "$B2G_APP_NAME" ]] || abort "APP_NAME not provided to function update_b2g"
+B2G_SOURCE_PATH="$2"
+[[ -n "$B2G_SOURCE_PATH" ]] || abort "SOURCE_PATH not provided to function update_b2g"
+B2G_APP_ID="$3"
+[[ -n "$B2G_APP_ID" ]] || abort "APP_GUID not provided to function update_b2g"
 
 B2G_SOURCE_URL="${FILE_URL_PREFIX}/${B2G_SOURCE_PATH}/${FILE_URL_FILENAME}"
 
@@ -76,7 +76,7 @@ echo "$B2G_LATEST_REVISION" > $B2G_REVISION_FILE
 }
 
 # update the b2g files on disk
-update_b2g
+update_b2g "b2g" "b2g/app" "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 
 #deploy the code
 /data/genericrhel6/deploy dynamicua.cdn.mozilla.net
