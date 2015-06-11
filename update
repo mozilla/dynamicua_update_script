@@ -10,6 +10,7 @@ B2G_FILE_URL_PATH="${FILE_URL_PREFIX}/b2g/app"
 FILE_URL="${B2G_FILE_URL_PATH}/${FILE_URL_FILENAME}"
 
 FILE_REVISION_NAME="file_revision.txt"
+CURRENT_REVISION_FILE="${CODE_DIR}/${FILE_REVISION_NAME}"
 
 FILE_LATEST_REVISION=$(curl -s "${FILE_URL/raw-file/file}" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
 
@@ -37,13 +38,13 @@ then
     checkretval
 fi
 
-if [[ ! -f $CODE_DIR/$FILE_REVISION_NAME ]]
+if [[ ! -f $CURRENT_REVISION_FILE ]]
 then
     # If we don't have a current revision, write out a placeholder to force an update later on.
-    echo '__NONE__' > $CODE_DIR/$FILE_REVISION_NAME
+    echo '__NONE__' > $CURRENT_REVISION_FILE
 fi
 
-FILE_DEPLOYED_REVISION="$(cat $CODE_DIR/$FILE_REVISION_NAME)"
+FILE_DEPLOYED_REVISION="$(cat $CURRENT_REVISION_FILE)"
 
 if [[ "$FILE_DEPLOYED_REVISION" == "$FILE_LATEST_REVISION" ]]
 then
@@ -63,7 +64,7 @@ cat $VERSION_DIR/$FILENAME | json_verify > /dev/null
 checkretval
 
 # update the current revision on disk
-echo "$FILE_LATEST_REVISION" > $CODE_DIR/$FILE_REVISION_NAME
+echo "$FILE_LATEST_REVISION" > $CURRENT_REVISION_FILE
 
 #deploy the code
 /data/genericrhel6/deploy dynamicua.cdn.mozilla.net
