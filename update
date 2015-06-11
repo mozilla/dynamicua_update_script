@@ -5,11 +5,11 @@ function abort () { echo "Error: $*, aborting."; exit 1; }
 SRC_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net"
 [[ -d "$SRC_DIR" ]] || abort "SRC_DIR '${SRC_DIR}' is not a directory"
 
-CODE_DIR="${SRC_DIR}/dynamicua"
-[[ -d "$CODE_DIR" ]] || abort "CODE_DIR '${CODE_DIR}' is not a directory"
-
 FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
 FILE_URL_FILENAME="ua-update.json.in"
+
+CODE_DIR="${SRC_DIR}/dynamicua"
+[[ -d "$CODE_DIR" ]] || abort "CODE_DIR '${CODE_DIR}' is not a directory"
 
 VERSION=$(cat "${SRC_DIR}/version.txt")
 [[ -n "$VERSION" ]] || abort "unable to load VERSION from '${SRC_DIR}/version.txt'"
