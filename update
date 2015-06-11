@@ -21,6 +21,8 @@ FILENAME=$B2G_APP_ID
 VERSION=$(cat "${SRC_DIR}/version.txt")
 VERSION_DIR=$CODE_DIR/$VERSION
 
+B2G_OUTPUT_FILE="${VERSION_DIR}/${FILENAME}"
+
 function checkretval(){
     retval=$?
     if [[ $retval -gt 0 ]]; then
@@ -52,15 +54,15 @@ then
 fi
 
 # get file from Mercurial
-curl -s $FILE_URL -o $VERSION_DIR/$FILENAME
+curl -s $FILE_URL -o $B2G_OUTPUT_FILE
 checkretval
 
 # remove JS comments from file
-sed -i 's/\/\/.*$//g' $VERSION_DIR/$FILENAME
+sed -i 's/\/\/.*$//g' $B2G_OUTPUT_FILE
 checkretval
 
 # verify we have valid json before pushing
-cat $VERSION_DIR/$FILENAME | json_verify > /dev/null
+cat $B2G_OUTPUT_FILE | json_verify > /dev/null
 checkretval
 
 # update the current revision on disk
