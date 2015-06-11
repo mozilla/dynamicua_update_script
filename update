@@ -15,8 +15,8 @@ B2G_SOURCE_URL="${FILE_URL_PREFIX}/b2g/app/${FILE_URL_FILENAME}"
 FILE_REVISION_NAME="file_revision.txt"
 CURRENT_REVISION_FILE="${CODE_DIR}/${FILE_REVISION_NAME}"
 
-FILE_LATEST_REVISION=$(curl -s "${B2G_SOURCE_URL/raw-file/file}" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
-[[ -n "$FILE_LATEST_REVISION" ]] || abort "unable to fetch FILE_LATEST_REVISION from '${B2G_SOURCE_URL/raw-file/file}'"
+B2G_LATEST_REVISION=$(curl -s "${B2G_SOURCE_URL/raw-file/file}" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
+[[ -n "$B2G_LATEST_REVISION" ]] || abort "unable to fetch B2G_LATEST_REVISION from '${B2G_SOURCE_URL/raw-file/file}'"
 
 B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 [[ -n "$B2G_APP_ID" ]] || abort "B2G_APP_ID is not set"
@@ -46,7 +46,7 @@ fi
 
 FILE_DEPLOYED_REVISION="$(cat $CURRENT_REVISION_FILE)"
 
-if [[ "$FILE_DEPLOYED_REVISION" == "$FILE_LATEST_REVISION" ]]
+if [[ "$FILE_DEPLOYED_REVISION" == "$B2G_LATEST_REVISION" ]]
 then
     exit 0
 fi
@@ -64,7 +64,7 @@ cat $B2G_OUTPUT_FILE | json_verify > /dev/null
 checkretval
 
 # update the current revision on disk
-echo "$FILE_LATEST_REVISION" > $CURRENT_REVISION_FILE
+echo "$B2G_LATEST_REVISION" > $CURRENT_REVISION_FILE
 
 #deploy the code
 /data/genericrhel6/deploy dynamicua.cdn.mozilla.net
