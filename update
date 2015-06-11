@@ -85,8 +85,8 @@ function update_app () {
     curl -s $SOURCE_URL -o $OUTPUT_FILE
     checkretval
 
-    # remove JS comments from file
-    sed -i 's/\/\/.*$//g' $OUTPUT_FILE
+    # remove comments, preprocessor directive and empty lines from file
+    sed -i '' 's/\/\/.*$//g; s/#filter slashslash//; /^ *$/d' $OUTPUT_FILE
     checkretval
 
     # verify we have valid json before pushing
