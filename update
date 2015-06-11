@@ -20,6 +20,9 @@ then
     mkdir $VERSION_DIR || abort "unable to mkdir VERSION_DIR '${VERSION_DIR}'"
 fi
 
+# triggers a deploy when set to 'yes' by any call to update_b2g().
+NEED_TO_DEPLOY='no'
+
 function get_latest_revision () {
     [[ -n "$1" ]] || abort "url not provided to get_latest_revision"
     curl -s "$1" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$'
@@ -73,10 +76,16 @@ checkretval
 # update the current revision on disk
 echo "$B2G_LATEST_REVISION" > $B2G_REVISION_FILE
 
+# inform the script that we need to do a deploy
+NEED_TO_DEPLOY='yes'
+
 }
 
 # update the b2g files on disk
 update_b2g "b2g" "b2g/app" "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 
-#deploy the code
-/data/genericrhel6/deploy dynamicua.cdn.mozilla.net
+if [[ "$NEED_TO_DEPLOY" == 'yes' ]]
+then
+    #deploy the code
+    /data/genericrhel6/deploy dynamicua.cdn.mozilla.net
+fi
