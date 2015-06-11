@@ -31,13 +31,13 @@ function checkretval(){
 {
 
 
-if [ ! -d $VERSION_DIR ]
+if [[ ! -d $VERSION_DIR ]]
 then
     mkdir $VERSION_DIR
     checkretval
 fi
 
-if [ ! -f $CODE_DIR/$FILE_REVISION_NAME ]
+if [[ ! -f $CODE_DIR/$FILE_REVISION_NAME ]]
 then
     # If we don't have a current revision, write out a placeholder to force an update later on.
     echo '__NONE__' > $CODE_DIR/$FILE_REVISION_NAME
@@ -45,7 +45,7 @@ fi
 
 FILE_DEPLOYED_REVISION="$(cat $CODE_DIR/$FILE_REVISION_NAME)"
 
-if [ "$FILE_DEPLOYED_REVISION" == "$FILE_LATEST_REVISION" ]
+if [[ "$FILE_DEPLOYED_REVISION" == "$FILE_LATEST_REVISION" ]]
 then
     exit 0
 fi
