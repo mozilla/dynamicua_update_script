@@ -1,6 +1,15 @@
 #/bin/bash
 
+### This file contains four sections:
+    # Global config variables.
+    # Calculated global values.
+    # Helper functions.
+    # Main script code.
+
 function abort () { echo "Error: $*, aborting."; exit 1; }
+
+
+### Global config variables.
 
 SRC_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net"
 [[ -d "$SRC_DIR" ]] || abort "SRC_DIR '${SRC_DIR}' is not a directory"
@@ -12,6 +21,9 @@ SRC_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net"
 #
 FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
 FILE_URL_FILENAME="ua-update.json.in"
+
+
+### Calculated global values.
 
 CODE_DIR="${SRC_DIR}/dynamicua"
 [[ -d "$CODE_DIR" ]] || abort "CODE_DIR '${CODE_DIR}' is not a directory"
@@ -27,6 +39,9 @@ fi
 
 # triggers a deploy when set to 'yes' by any call to update_b2g().
 NEED_TO_DEPLOY='no'
+
+
+### Helper functions.
 
 function get_latest_revision () {
     [[ -n "$1" ]] || abort "url not provided to get_latest_revision"
@@ -85,6 +100,9 @@ echo "$B2G_LATEST_REVISION" > $B2G_REVISION_FILE
 NEED_TO_DEPLOY='yes'
 
 }
+
+
+### Main script code.
 
 # update the b2g files on disk
 update_b2g "b2g" "b2g/app" "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
