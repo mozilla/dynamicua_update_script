@@ -1,5 +1,7 @@
 #/bin/bash
 
+function abort () { echo "Error: $*, aborting."; exit 1; }
+
 SRC_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net"
 
 CODE_DIR="${SRC_DIR}/dynamicua"
