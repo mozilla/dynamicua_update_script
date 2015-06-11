@@ -5,6 +5,11 @@ function abort () { echo "Error: $*, aborting."; exit 1; }
 SRC_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net"
 [[ -d "$SRC_DIR" ]] || abort "SRC_DIR '${SRC_DIR}' is not a directory"
 
+# For each update path, we craft a URL:
+#   <file_url_prefix>/<app_specific_path>/<file_url_filename>
+#
+# The prefix and filename are set globally.
+#
 FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
 FILE_URL_FILENAME="ua-update.json.in"
 
