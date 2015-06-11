@@ -11,7 +11,7 @@ FILE_URL="${B2G_FILE_URL_PATH}/${FILE_URL_FILENAME}"
 
 FILE_REVISION_NAME="file_revision.txt"
 
-FILE_LATEST_REVISION=$(curl -s https://hg.mozilla.org/mozilla-central/file/tip/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
+FILE_LATEST_REVISION=$(curl -s "${FILE_URL/raw-file/file}" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
 
 B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 
