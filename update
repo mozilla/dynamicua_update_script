@@ -16,12 +16,10 @@ FILE_LATEST_REVISION=$(curl -s "${B2G_SOURCE_URL/raw-file/file}" | grep -A1 '<td
 
 B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 
-FILENAME=$B2G_APP_ID
-
 VERSION=$(cat "${SRC_DIR}/version.txt")
 VERSION_DIR=$CODE_DIR/$VERSION
 
-B2G_OUTPUT_FILE="${VERSION_DIR}/${FILENAME}"
+B2G_OUTPUT_FILE="${VERSION_DIR}/${B2G_APP_ID}"
 
 function checkretval(){
     retval=$?
