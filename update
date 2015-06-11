@@ -1,11 +1,17 @@
 #/bin/bash
 
 CODE_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net/dynamicua"
+
 FILE_URL="https://hg.mozilla.org/mozilla-central/raw-file/tip/b2g/app/ua-update.json.in"
+
 FILE_REVISION_NAME="file_revision.txt"
+
 FILE_LATEST_REVISION=$(curl -s https://hg.mozilla.org/mozilla-central/file/tip/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
+
 B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
+
 FILENAME=$B2G_APP_ID
+
 VERSION=$(cat /data/genericrhel6/src/dynamicua.cdn.mozilla.net/version.txt)
 VERSION_DIR=$CODE_DIR/$VERSION
 
