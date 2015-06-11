@@ -10,26 +10,15 @@ CODE_DIR="${SRC_DIR}/dynamicua"
 
 FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
 FILE_URL_FILENAME="ua-update.json.in"
-B2G_SOURCE_URL="${FILE_URL_PREFIX}/b2g/app/${FILE_URL_FILENAME}"
-
-B2G_REVISION_FILE="${CODE_DIR}/b2g_revision.txt"
-
-function get_latest_revision () {
-    [[ -n "$1" ]] || abort "url not provided to get_latest_revision"
-    curl -s "$1" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$'
-}
-
-B2G_LATEST_REVISION=$( get_latest_revision "${B2G_SOURCE_URL/raw-file/file}" )
-[[ -n "$B2G_LATEST_REVISION" ]] || abort "unable to fetch B2G_LATEST_REVISION from '${B2G_SOURCE_URL/raw-file/file}'"
-
-B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
-[[ -n "$B2G_APP_ID" ]] || abort "B2G_APP_ID is not set"
 
 VERSION=$(cat "${SRC_DIR}/version.txt")
 [[ -n "$VERSION" ]] || abort "unable to load VERSION from '${SRC_DIR}/version.txt'"
 VERSION_DIR=$CODE_DIR/$VERSION
 
-B2G_OUTPUT_FILE="${VERSION_DIR}/${B2G_APP_ID}"
+function get_latest_revision () {
+    [[ -n "$1" ]] || abort "url not provided to get_latest_revision"
+    curl -s "$1" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$'
+}
 
 function checkretval(){
     retval=$?
@@ -38,6 +27,18 @@ function checkretval(){
         exit $retval
     fi
 }
+
+B2G_SOURCE_URL="${FILE_URL_PREFIX}/b2g/app/${FILE_URL_FILENAME}"
+
+B2G_REVISION_FILE="${CODE_DIR}/b2g_revision.txt"
+
+B2G_LATEST_REVISION=$( get_latest_revision "${B2G_SOURCE_URL/raw-file/file}" )
+[[ -n "$B2G_LATEST_REVISION" ]] || abort "unable to fetch B2G_LATEST_REVISION from '${B2G_SOURCE_URL/raw-file/file}'"
+
+B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
+[[ -n "$B2G_APP_ID" ]] || abort "B2G_APP_ID is not set"
+
+B2G_OUTPUT_FILE="${VERSION_DIR}/${B2G_APP_ID}"
 
 {
 
