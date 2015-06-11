@@ -39,7 +39,8 @@ fi
 
 if [ ! -f $CODE_DIR/$FILE_REVISION_NAME ]
 then
-    curl -s https://hg.mozilla.org/mozilla-central/file/tip/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$' > $CODE_DIR/$FILE_REVISION_NAME
+    # If we don't have a current revision, write out a placeholder to force an update later on.
+    echo '__NONE__' > $CODE_DIR/$FILE_REVISION_NAME
 fi
 
 FILE_DEPLOYED_REVISION=$(cat $CODE_DIR/$FILE_REVISION_NAME)
