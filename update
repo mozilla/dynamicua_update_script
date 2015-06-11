@@ -12,7 +12,7 @@ FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
 FILE_URL_FILENAME="ua-update.json.in"
 B2G_SOURCE_URL="${FILE_URL_PREFIX}/b2g/app/${FILE_URL_FILENAME}"
 
-CURRENT_REVISION_FILE="${CODE_DIR}/file_revision.txt"
+B2G_REVISION_FILE="${CODE_DIR}/file_revision.txt"
 
 B2G_LATEST_REVISION=$(curl -s "${B2G_SOURCE_URL/raw-file/file}" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
 [[ -n "$B2G_LATEST_REVISION" ]] || abort "unable to fetch B2G_LATEST_REVISION from '${B2G_SOURCE_URL/raw-file/file}'"
@@ -43,7 +43,7 @@ then
     checkretval
 fi
 
-FILE_DEPLOYED_REVISION="$(cat $CURRENT_REVISION_FILE)"
+FILE_DEPLOYED_REVISION="$(cat $B2G_REVISION_FILE)"
 
 if [[ "$FILE_DEPLOYED_REVISION" == "$B2G_LATEST_REVISION" ]]
 then
@@ -63,7 +63,7 @@ cat $B2G_OUTPUT_FILE | json_verify > /dev/null
 checkretval
 
 # update the current revision on disk
-echo "$B2G_LATEST_REVISION" > $CURRENT_REVISION_FILE
+echo "$B2G_LATEST_REVISION" > $B2G_REVISION_FILE
 
 #deploy the code
 /data/genericrhel6/deploy dynamicua.cdn.mozilla.net
