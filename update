@@ -104,8 +104,9 @@ function update_app () {
 
 ### Main script code.
 
-# update the b2g files on disk
-update_app "b2g" "b2g/app" "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
+# update the files on disk
+update_app  "b2g"     "b2g/app"             "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
+update_app  "fennec"  "mobile/android/app"  "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
 
 # deploy, if necessary
 if [[ "$NEED_TO_DEPLOY" == 'yes' ]]
