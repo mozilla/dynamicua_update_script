@@ -58,46 +58,46 @@ function checkretval(){
 
 function update_app () {
 
-APP_NAME="$1"
-[[ -n "$APP_NAME" ]] || abort "APP_NAME not provided to function update_b2g"
-SOURCE_PATH="$2"
-[[ -n "$SOURCE_PATH" ]] || abort "SOURCE_PATH not provided to function update_b2g"
-APP_ID="$3"
-[[ -n "$APP_ID" ]] || abort "APP_GUID not provided to function update_b2g"
+    APP_NAME="$1"
+    [[ -n "$APP_NAME" ]] || abort "APP_NAME not provided to function update_b2g"
+    SOURCE_PATH="$2"
+    [[ -n "$SOURCE_PATH" ]] || abort "SOURCE_PATH not provided to function update_b2g"
+    APP_ID="$3"
+    [[ -n "$APP_ID" ]] || abort "APP_GUID not provided to function update_b2g"
 
-SOURCE_URL="${FILE_URL_PREFIX}/${SOURCE_PATH}/${FILE_URL_FILENAME}"
+    SOURCE_URL="${FILE_URL_PREFIX}/${SOURCE_PATH}/${FILE_URL_FILENAME}"
 
-REVISION_FILE="${CODE_DIR}/${APP_NAME}_revision.txt"
+    REVISION_FILE="${CODE_DIR}/${APP_NAME}_revision.txt"
 
-LATEST_REVISION=$( get_latest_revision "${SOURCE_URL/raw-file/file}" )
-[[ -n "$LATEST_REVISION" ]] || abort "unable to fetch LATEST_REVISION from '${SOURCE_URL/raw-file/file}'"
+    LATEST_REVISION=$( get_latest_revision "${SOURCE_URL/raw-file/file}" )
+    [[ -n "$LATEST_REVISION" ]] || abort "unable to fetch LATEST_REVISION from '${SOURCE_URL/raw-file/file}'"
 
-OUTPUT_FILE="${VERSION_DIR}/${APP_ID}"
+    OUTPUT_FILE="${VERSION_DIR}/${APP_ID}"
 
-DEPLOYED_REVISION="$(cat $REVISION_FILE)"
+    DEPLOYED_REVISION="$(cat $REVISION_FILE)"
 
-if [[ "$DEPLOYED_REVISION" == "$LATEST_REVISION" ]]
-then
-    return 0
-fi
+    if [[ "$DEPLOYED_REVISION" == "$LATEST_REVISION" ]]
+    then
+        return 0
+    fi
 
-# get file from Mercurial
-curl -s $SOURCE_URL -o $OUTPUT_FILE
-checkretval
+    # get file from Mercurial
+    curl -s $SOURCE_URL -o $OUTPUT_FILE
+    checkretval
 
-# remove JS comments from file
-sed -i 's/\/\/.*$//g' $OUTPUT_FILE
-checkretval
+    # remove JS comments from file
+    sed -i 's/\/\/.*$//g' $OUTPUT_FILE
+    checkretval
 
-# verify we have valid json before pushing
-cat $OUTPUT_FILE | json_verify > /dev/null
-checkretval
+    # verify we have valid json before pushing
+    cat $OUTPUT_FILE | json_verify > /dev/null
+    checkretval
 
-# update the current revision on disk
-echo "$LATEST_REVISION" > $REVISION_FILE
+    # update the current revision on disk
+    echo "$LATEST_REVISION" > $REVISION_FILE
 
-# inform the script that we need to do a deploy
-NEED_TO_DEPLOY='yes'
+    # inform the script that we need to do a deploy
+    NEED_TO_DEPLOY='yes'
 
 }
 
