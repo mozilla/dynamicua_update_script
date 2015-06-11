@@ -61,6 +61,9 @@ checkretval
 cat $VERSION_DIR/$FILENAME | json_verify > /dev/null
 checkretval
 
+# update the current revision on disk
+echo "$FILE_LATEST_REVISION" > $CODE_DIR/$FILE_REVISION_NAME
+
 #deploy the code
 /data/genericrhel6/deploy dynamicua.cdn.mozilla.net
 
