@@ -1,13 +1,52 @@
 #/bin/bash
 
-CODE_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net/dynamicua"
-FILE_URL="https://hg.mozilla.org/mozilla-central/raw-file/tip/b2g/app/ua-update.json.in"
-FILE_REVISION_NAME="file_revision.txt"
-FILE_LATEST_REVISION=$(curl -s https://hg.mozilla.org/mozilla-central/file/tip/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$')
-B2G_APP_ID="{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
-FILENAME=$B2G_APP_ID
-VERSION=$(cat /data/genericrhel6/src/dynamicua.cdn.mozilla.net/version.txt)
+### This file contains four sections:
+    # Global config variables.
+    # Calculated global values.
+    # Helper functions.
+    # Main script code.
+
+function abort () { echo "Error: $*, aborting."; exit 1; }
+
+
+### Global config variables.
+
+SRC_DIR="/data/genericrhel6/src/dynamicua.cdn.mozilla.net"
+[[ -d "$SRC_DIR" ]] || abort "SRC_DIR '${SRC_DIR}' is not a directory"
+
+# For each update path, we craft a URL:
+#   <file_url_prefix>/<app_specific_path>/<file_url_filename>
+#
+# The prefix and filename are set globally.
+#
+FILE_URL_PREFIX="https://hg.mozilla.org/mozilla-central/raw-file/tip"
+FILE_URL_FILENAME="ua-update.json.in"
+
+
+### Calculated global values.
+
+CODE_DIR="${SRC_DIR}/dynamicua"
+[[ -d "$CODE_DIR" ]] || abort "CODE_DIR '${CODE_DIR}' is not a directory"
+
+VERSION=$(cat "${SRC_DIR}/version.txt")
+[[ -n "$VERSION" ]] || abort "unable to load VERSION from '${SRC_DIR}/version.txt'"
 VERSION_DIR=$CODE_DIR/$VERSION
+
+if [[ ! -d $VERSION_DIR ]]
+then
+    mkdir $VERSION_DIR || abort "unable to mkdir VERSION_DIR '${VERSION_DIR}'"
+fi
+
+# triggers a deploy when set to 'yes' by any call to update_b2g().
+NEED_TO_DEPLOY='no'
+
+
+### Helper functions.
+
+function get_latest_revision () {
+    [[ -n "$1" ]] || abort "url not provided to get_latest_revision"
+    curl -s "$1" | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$'
+}
 
 function checkretval(){
     retval=$?
@@ -17,40 +56,68 @@ function checkretval(){
     fi
 }
 
-{
+function check_json_verify () {
+    [[ -n "$( which json_verify )" ]] || abort "json_verify command (part of package yajl) not found in PATH"
+}
 
+function update_app () {
 
-if [ ! -d $VERSION_DIR ]
-then
-    mkdir $VERSION_DIR
+    APP_NAME="$1"
+    [[ -n "$APP_NAME" ]] || abort "APP_NAME not provided to function update_b2g"
+    SOURCE_PATH="$2"
+    [[ -n "$SOURCE_PATH" ]] || abort "SOURCE_PATH not provided to function update_b2g"
+    APP_ID="$3"
+    [[ -n "$APP_ID" ]] || abort "APP_GUID not provided to function update_b2g"
+
+    SOURCE_URL="${FILE_URL_PREFIX}/${SOURCE_PATH}/${FILE_URL_FILENAME}"
+
+    REVISION_FILE="${CODE_DIR}/${APP_NAME}_revision.txt"
+
+    LATEST_REVISION=$( get_latest_revision "${SOURCE_URL/raw-file/file}" )
+    [[ -n "$LATEST_REVISION" ]] || abort "unable to fetch LATEST_REVISION from '${SOURCE_URL/raw-file/file}'"
+
+    OUTPUT_FILE="${VERSION_DIR}/${APP_ID}"
+
+    DEPLOYED_REVISION="$(cat $REVISION_FILE)"
+
+    if [[ "$DEPLOYED_REVISION" == "$LATEST_REVISION" ]]
+    then
+        return 0
+    fi
+
+    # get file from Mercurial
+    curl -s $SOURCE_URL -o $OUTPUT_FILE
     checkretval
-fi
 
-if [ ! -f $CODE_DIR/$FILE_REVISION_NAME ]
-then
-    curl -s https://hg.mozilla.org/mozilla-central/file/tip/b2g/app/ua-update.json.in | grep -A1 '<td>changeset' | awk -F '[">]' '{print $9}' | awk -F '[</a]' '{print $1}' | grep -v '^$' > $CODE_DIR/$FILE_REVISION_NAME
-fi
+    # remove comments, preprocessor directive and empty lines from file
+    sed -i '' 's/\/\/.*$//g; s/#filter slashslash//; /^ *$/d' $OUTPUT_FILE
+    checkretval
 
-FILE_DEPLOYED_REVISION=$(cat $CODE_DIR/$FILE_REVISION_NAME)
+    # verify we have valid json before pushing
+    cat $OUTPUT_FILE | json_verify > /dev/null
+    checkretval
 
-if [ $FILE_DEPLOYED_REVISION == $FILE_LATEST_REVISION ]
-then
-    exit 0
-fi
+    # update the current revision on disk
+    echo "$LATEST_REVISION" > $REVISION_FILE
 
-# get file from Mercurial
-curl -s $FILE_URL -o $VERSION_DIR/$FILENAME
-checkretval
-
-# remove JS comments from file
-sed -i 's/\/\/.*$//g' $VERSION_DIR/$FILENAME
-checkretval
-
-# verify we have valid json before pushing
-cat $VERSION_DIR/$FILENAME | json_verify > /dev/null
-checkretval
-
-#deploy the code
-/data/genericrhel6/deploy dynamicua.cdn.mozilla.net
+    # inform the script that we need to do a deploy
+    NEED_TO_DEPLOY='yes'
 
 }
+
+
+### Main script code.
+
+# make sure we have a working json_verify command
+check_json_verify
+
+# update the files on disk
+update_app  "b2g"     "b2g/app"             "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
+update_app  "fennec"  "mobile/android/app"  "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
+
+# deploy, if necessary
+if [[ "$NEED_TO_DEPLOY" == 'yes' ]]
+then
+    #deploy the code
+    /data/genericrhel6/deploy dynamicua.cdn.mozilla.net
+fi
