@@ -90,7 +90,7 @@ function update_app () {
     checkretval
 
     # remove comments, preprocessor directive and empty lines from file
-    sed -i '' 's/\/\/.*$//g; s/#filter slashslash//; /^ *$/d' $OUTPUT_FILE
+    perl -pi -e '$_ =~ s|//.*$||g; $_ = undef if /^#filter slashslash$/; $_ = undef unless /\S/; $_' $OUTPUT_FILE
     checkretval
 
     # verify we have valid json before pushing
