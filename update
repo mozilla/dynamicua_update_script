@@ -56,6 +56,10 @@ function checkretval(){
     fi
 }
 
+function check_json_verify () {
+    [[ -n "$( which json_verify )" ]] || abort "json_verify command (part of package yajl) not found in PATH"
+}
+
 function update_app () {
 
     APP_NAME="$1"
@@ -103,6 +107,9 @@ function update_app () {
 
 
 ### Main script code.
+
+# make sure we have a working json_verify command
+check_json_verify
 
 # update the files on disk
 update_app  "b2g"     "b2g/app"             "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
