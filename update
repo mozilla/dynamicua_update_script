@@ -37,7 +37,7 @@ then
     mkdir $VERSION_DIR || abort "unable to mkdir VERSION_DIR '${VERSION_DIR}'"
 fi
 
-# triggers a deploy when set to 'yes' by any call to update_b2g().
+# triggers a deploy when set to 'yes' by any call to update_app().
 NEED_TO_DEPLOY='no'
 
 
@@ -63,11 +63,11 @@ function check_json_verify () {
 function update_app () {
 
     APP_NAME="$1"
-    [[ -n "$APP_NAME" ]] || abort "APP_NAME not provided to function update_b2g"
+    [[ -n "$APP_NAME" ]] || abort "APP_NAME not provided to function update_app"
     SOURCE_PATH="$2"
-    [[ -n "$SOURCE_PATH" ]] || abort "SOURCE_PATH not provided to function update_b2g"
+    [[ -n "$SOURCE_PATH" ]] || abort "SOURCE_PATH not provided to function update_app"
     APP_ID="$3"
-    [[ -n "$APP_ID" ]] || abort "APP_GUID not provided to function update_b2g"
+    [[ -n "$APP_ID" ]] || abort "APP_GUID not provided to function update_app"
 
     SOURCE_URL="${FILE_URL_PREFIX}/${SOURCE_PATH}/${FILE_URL_FILENAME}"
 
@@ -112,7 +112,6 @@ function update_app () {
 check_json_verify
 
 # update the files on disk
-update_app  "b2g"     "b2g/app"             "{3c2e2abc-06d4-11e1-ac3b-374f68613e61}"
 update_app  "fennec"  "mobile/android/app"  "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
 
 # deploy, if necessary
